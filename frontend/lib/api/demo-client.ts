@@ -49,7 +49,6 @@ const MODEL = "static-demo-rag";
 let conversationsCache: ConversationDetailResponse[] | null = null;
 let nextConversationId = 9100;
 let nextMessageId = 9300;
-let nextFeedbackId = 3100;
 
 function readOnlyReject<T>(): Promise<T> {
   return Promise.reject(new Error(READ_ONLY_MESSAGE));
@@ -465,14 +464,8 @@ export const demoApi = {
     return clone(conversation);
   },
 
-  async submitFeedback(req): Promise<FeedbackResponse> {
-    return {
-      id: nextFeedbackId++,
-      message_id: req.message_id,
-      rating: req.rating,
-      comment: req.comment ?? null,
-      created_at: nowIso(),
-    };
+  submitFeedback(): Promise<FeedbackResponse> {
+    return readOnlyReject();
   },
 
   async getFeedbackAnalytics(days = 30) {

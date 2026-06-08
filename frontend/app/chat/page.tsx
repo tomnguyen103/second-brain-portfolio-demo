@@ -76,7 +76,7 @@ function ChatPage() {
     return history.messages.map((m) => {
       if (m.role === "assistant") {
         // Rehydrate the live-chat shape so replayed history gets clickable [n]
-        // citations, the source count, and working feedback thumbs.
+        // citations, the source count, and the static read-only feedback boundary.
         return {
           role: "assistant" as const,
           content: m.content,

@@ -30,11 +30,19 @@ function MessageSkeleton() {
 }
 
 const FeedbackButtons = ({ messageId }: { messageId: number }) => {
-  const { mutate, isPending, isSuccess } = useMutation({
+  const { mutate, isPending, isSuccess, isError, error } = useMutation({
     mutationFn: ({ rating }: { rating: 1 | -1 }) =>
       api.submitFeedback({ message_id: messageId, rating }),
   });
   if (isSuccess) return <span className="text-[10px] text-muted-foreground">Saved</span>;
+  if (isError) {
+    const message = error instanceof Error ? error.message : "Static demo is read-only.";
+    return (
+      <span className="text-[10px] font-medium text-muted-foreground" title={message}>
+        Read-only demo
+      </span>
+    );
+  }
   return (
     <div className="flex gap-0.5">
       {([1, -1] as const).map((r) => (

@@ -10,6 +10,9 @@ import type { ChatRequest, ChatResponse, ConversationListResponse } from "@/lib/
 import { MessageList } from "@/components/MessageList";
 import { ChatComposer } from "@/components/ChatComposer";
 import { SourceFilter } from "@/components/SourceFilter";
+import { STATIC_DEMO_MODE } from "@/lib/demo/config";
+
+const MAIN_SECOND_BRAIN_REPO_URL = "https://github.com/tomnguyen103/second-brain";
 
 function conversationTitle(message: string): string {
   const trimmed = message.trim().replace(/\s+/g, " ");
@@ -284,6 +287,26 @@ function ChatPage() {
           </div>
         </div>
       </header>
+      {STATIC_DEMO_MODE && (
+        <section className="shrink-0 border-b border-grid bg-muted/35 px-4 py-2.5 md:px-6">
+          <div className="mx-auto flex w-full max-w-5xl flex-col gap-2 text-xs leading-5 text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+            <p className="min-w-0">
+              <span className="mr-1.5 font-semibold text-foreground">Demo context.</span>
+              This static portfolio demo uses public-safe fixture data. The full backend logic,
+              local-first setup, MCP tools, eval workflow, and deployment architecture live in the
+              main Second Brain repository.
+            </p>
+            <a
+              href={MAIN_SECOND_BRAIN_REPO_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="shrink-0 text-xs font-semibold text-primary underline-offset-4 transition-colors hover:text-primary/85 hover:underline"
+            >
+              View full architecture repo
+            </a>
+          </div>
+        </section>
+      )}
       <MessageList messages={displayMessages} isLoading={isSending && !hasStreamingMessage} />
       <div ref={bottomRef} />
       <footer className="shrink-0 border-t border-grid bg-background">

@@ -6,10 +6,42 @@ import { useQuery } from "@tanstack/react-query";
 import { api, isChatStreamUnavailableError } from "@/lib/api/client";
 import { queryClient } from "@/lib/query-client";
 import type { ChatMessage } from "@/components/MessageList";
-import type { ChatRequest, ChatResponse } from "@/lib/api/types";
+import type { ChatRequest, ChatResponse, ConversationListResponse } from "@/lib/api/types";
 import { MessageList } from "@/components/MessageList";
 import { ChatComposer } from "@/components/ChatComposer";
 import { SourceFilter } from "@/components/SourceFilter";
+
+function conversationTitle(message: string): string {
+  const trimmed = message.trim().replace(/\s+/g, " ");
+  return trimmed.length > 72 ? `${trimmed.slice(0, 69)}...` : trimmed || "Static demo chat";
+}
+
+function updateConversationSummary(data: ChatResponse, prompt: string): void {
+  queryClient.setQueryData<ConversationListResponse>(["conversations"], (current) => {
+    if (!current) return current;
+
+    const now = new Date().toISOString();
+    const existing = current.conversations.find(
+      (conversation) => conversation.id === data.conversation_id,
+    );
+    const summary = {
+      id: data.conversation_id,
+      title: existing?.title ?? conversationTitle(prompt),
+      created_at: existing?.created_at ?? now,
+      updated_at: now,
+      message_count: existing ? Math.max(existing.message_count, 0) + 2 : 2,
+    };
+    const conversations = [
+      summary,
+      ...current.conversations.filter((conversation) => conversation.id !== data.conversation_id),
+    ];
+
+    return {
+      conversations,
+      total: existing ? current.total : current.total + 1,
+    };
+  });
+}
 
 function ChatPage() {
   const router = useRouter();
@@ -104,7 +136,11 @@ function ChatPage() {
   const displayMessages = messages.length > 0 ? messages : historyMessages;
   const hasStreamingMessage = displayMessages.some((m) => m.isStreaming);
 
-  const finishAssistant = (data: ChatResponse, requestConversationId: number | null) => {
+  const finishAssistant = (
+    data: ChatResponse,
+    requestConversationId: number | null,
+    prompt: string,
+  ) => {
     setMessages((prev) => {
       const idx = prev.findLastIndex((m) => m.role === "assistant" && m.isStreaming);
       if (idx === -1) {
@@ -114,6 +150,7 @@ function ChatPage() {
       next[idx] = { role: "assistant", content: data.answer, response: data };
       return next;
     });
+    updateConversationSummary(data, prompt);
     if (!requestConversationId) {
       preserveMessagesForRouteIdRef.current = data.conversation_id;
       setConversationId(data.conversation_id);
@@ -162,7 +199,7 @@ function ChatPage() {
     abortRef.current = controller;
     const finishIfActive = (data: ChatResponse) => {
       if (controller.signal.aborted || abortRef.current !== controller) return;
-      finishAssistant(data, req.conversation_id ?? null);
+      finishAssistant(data, req.conversation_id ?? null, req.message);
     };
     try {
       if (req.options?.agentic) {

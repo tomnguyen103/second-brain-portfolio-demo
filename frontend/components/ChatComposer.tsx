@@ -8,14 +8,23 @@ interface Props {
   onSend: (message: string, privateMode: boolean, agenticMode: boolean) => void;
   disabled?: boolean;
   agenticAvailable?: boolean;
+  agenticMode?: boolean;
+  onAgenticModeChange?: (enabled: boolean) => void;
 }
 
-export function ChatComposer({ onSend, disabled, agenticAvailable = false }: Props) {
+export function ChatComposer({
+  onSend,
+  disabled,
+  agenticAvailable = false,
+  agenticMode: controlledAgenticMode,
+  onAgenticModeChange,
+}: Props) {
   const [text, setText] = useState("");
   const [privateMode, setPrivateMode] = useState(false);
-  const [agenticMode, setAgenticMode] = useState(false);
+  const [internalAgenticMode, setInternalAgenticMode] = useState(false);
   const [focused, setFocused] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const agenticMode = controlledAgenticMode ?? internalAgenticMode;
 
   useEffect(() => {
     const el = textareaRef.current;
@@ -30,6 +39,11 @@ export function ChatComposer({ onSend, disabled, agenticAvailable = false }: Pro
     if (!canSend) return;
     onSend(text.trim(), privateMode, agenticMode && agenticAvailable);
     setText("");
+  };
+
+  const setAgenticEnabled = (enabled: boolean) => {
+    if (controlledAgenticMode === undefined) setInternalAgenticMode(enabled);
+    onAgenticModeChange?.(enabled);
   };
 
   return (
@@ -83,7 +97,7 @@ export function ChatComposer({ onSend, disabled, agenticAvailable = false }: Pro
               <motion.button
                 type="button"
                 whileTap={{ scale: 0.9 }}
-                onClick={() => setAgenticMode((previous) => !previous)}
+                onClick={() => setAgenticEnabled(!agenticMode)}
                 className={`flex h-8 w-8 items-center justify-center rounded-lg border transition-all focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-primary/25 ${
                   agenticMode
                     ? "border-primary/30 bg-primary/10 text-primary"

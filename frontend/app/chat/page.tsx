@@ -58,6 +58,7 @@ function ChatPage() {
   const [isSending, setIsSending] = useState(false);
   const [sourceIds, setSourceIds] = useState<number[]>([]);
   const [tags, setTags] = useState<string[]>([]);
+  const [agenticMode, setAgenticMode] = useState(false);
   const agenticAvailable = process.env.NEXT_PUBLIC_AGENTIC_RAG_ENABLED === "true";
   const bottomRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
@@ -270,8 +271,14 @@ function ChatPage() {
               local-first workspace
             </span>
             {agenticAvailable && (
-              <span className="rounded-md bg-primary/10 px-2 py-1 text-primary ring-1 ring-primary/25">
-                agentic opt-in
+              <span
+                className={
+                  agenticMode
+                    ? "rounded-md bg-primary/10 px-2 py-1 text-primary ring-1 ring-primary/25"
+                    : "rounded-md bg-muted px-2 py-1 text-muted-foreground ring-1 ring-border"
+                }
+              >
+                {agenticMode ? "agentic on" : "agentic off"}
               </span>
             )}
           </div>
@@ -287,6 +294,8 @@ function ChatPage() {
           }}
           disabled={isSending}
           agenticAvailable={agenticAvailable}
+          agenticMode={agenticMode}
+          onAgenticModeChange={setAgenticMode}
         />
       </footer>
     </div>

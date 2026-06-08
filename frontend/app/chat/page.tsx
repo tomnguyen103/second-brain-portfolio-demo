@@ -288,11 +288,13 @@ function ChatPage() {
         </div>
       </header>
       {STATIC_DEMO_MODE && (
-        <section className="shrink-0 border-b border-grid bg-muted/35 px-4 py-2.5 md:px-6">
-          <div className="mx-auto flex w-full max-w-5xl flex-col gap-2 text-xs leading-5 text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+        <section className="shrink-0 border-b border-primary/40 bg-primary px-4 py-3 text-primary-foreground md:px-6">
+          <div className="mx-auto flex w-full max-w-5xl flex-col gap-2 text-xs leading-5 sm:flex-row sm:items-center sm:justify-between">
             <p className="min-w-0">
-              <span className="mr-1.5 font-semibold text-foreground">Demo context.</span>
-              This static portfolio demo uses public-safe fixture data. The full backend logic,
+              <span className="mr-2 inline-flex rounded-md bg-primary-foreground px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-primary">
+                Demo
+              </span>
+              This static portfolio preview uses public-safe fixture data. The full backend logic,
               local-first setup, MCP tools, eval workflow, and deployment architecture live in the
               main Second Brain repository.
             </p>
@@ -300,7 +302,7 @@ function ChatPage() {
               href={MAIN_SECOND_BRAIN_REPO_URL}
               target="_blank"
               rel="noreferrer"
-              className="shrink-0 text-xs font-semibold text-primary underline-offset-4 transition-colors hover:text-primary/85 hover:underline"
+              className="inline-flex shrink-0 items-center justify-center rounded-md bg-primary-foreground px-2.5 py-1 text-xs font-bold text-primary shadow-sm transition-colors hover:bg-primary-foreground/90 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-primary-foreground/35"
             >
               View full architecture repo
             </a>

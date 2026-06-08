@@ -1,22 +1,54 @@
 # Second Brain Portfolio Demo
 
-This repository is the public, zero-cost Netlify static demo for
-[Second Brain](https://github.com/tomnguyen103/second-brain). It exists so
-portfolio visitors can click through the product experience without deploying
-the private local-first runtime.
+**A zero-cost static Netlify portfolio preview of
+[Second Brain](https://github.com/tomnguyen103/second-brain): a local-first
+personal AI workspace for streaming cited RAG, hybrid search, source
+management, briefings, feedback/evals, and MCP-powered actions.**
+
+This repository keeps the public demo separate from the full local-first
+runtime. It ships only static frontend assets and public-safe fixture data, so
+portfolio visitors can click through the product experience without deploying a
+database, API server, worker, LLM key, or private notes.
 
 ![Second Brain static portfolio demo chat screen](docs/assets/second-brain-portfolio-demo-chat.png)
 
 ## Important Note
 
-This repo is only the static portfolio demo. The real application logic,
-backend architecture, local-first setup, MCP tools, eval workflow, worker,
-database, and operations documentation live in the main repository:
+This repo is only the static portfolio demo. The actual logic code, backend
+architecture, local-first setup, MCP tools, eval workflow, worker, database, and
+operations documentation live in the main repository:
 
 https://github.com/tomnguyen103/second-brain
 
 Use this repo to review the deployable public frontend experience. Use the main
-`second-brain` repo to review how the full system is built and operated.
+`second-brain` repo to review how the full system is built, operated, tested,
+and extended.
+
+## Project Overview
+
+The full Second Brain project captures web passages and personal knowledge,
+stores them in PostgreSQL with pgvector and full-text indexes, serves
+citation-validated answers over streaming chat, produces briefings, and exposes
+MCP tools for trusted local clients.
+
+This static demo mirrors the portfolio-facing web shell with deterministic,
+browser-side fixture behavior. Chat, search, sources, status, feedback, tasks,
+research, briefing, and admin pages call a read-only demo adapter backed by the
+public demo corpus. Regular RAG and Agentic RAG are both represented with
+citation markers, retrieval metadata, source snippets, and a clear demo-context
+notice that links viewers to the full architecture repo.
+
+## Tech Stack
+
+| Layer | Static portfolio demo | Full `second-brain` repo |
+| --- | --- | --- |
+| Frontend | Next.js 16 static export, React 19, TypeScript, Tailwind CSS, Base UI/shadcn-style primitives, TanStack Query, Framer Motion, Phosphor/lucide icons | Next.js, TypeScript, Tailwind CSS, shadcn/ui, TanStack Query, repo-local WattVision DesignMD |
+| Demo API | Browser-side read-only adapter in `frontend/lib/api/demo-client.ts` | Python, FastAPI, SQLAlchemy, Alembic, Pydantic v2 |
+| Data and retrieval | Public-safe fixture corpus, deterministic static search, local citation helpers | PostgreSQL, pgvector, full-text search, JSONB, RLS, audit tables, RRF hybrid retrieval |
+| Agentic RAG | Static Agentic RAG metadata and deterministic comparison answers | LangGraph request-scoped read-only retrieval workflow |
+| LLM and embeddings | No browser LLM calls, no embedding API calls, no secrets | Gemini 2.5 Flash, local Ollama private mode, fake driver, MiniLM or Gemini embeddings |
+| Workflows | Read-only UI surfaces for writes, ingest, eval promotion, retention purge, and admin actions | MCP stdio tools, durable worker jobs, daily briefings, feedback review, MLflow evals, CI eval gate |
+| Runtime and deploy | Netlify static export from `frontend/out`; zero backend cost | Local-first Docker Compose with optional VPS demo recipe and local kind learning track |
 
 ## What This Demo Shows
 
@@ -27,8 +59,8 @@ Use this repo to review the deployable public frontend experience. Use the main
 - Static search over the public demo corpus.
 - Read-only behavior for writes such as capture, ingest, task creation,
   source edits, research enqueue, eval promotion, deletion, and retention purge.
-- A demo context notice that tells viewers this is a static portfolio preview
-  and links to the full architecture repo.
+- A highlighted demo context notice that tells viewers this is a static
+  portfolio preview and links to the full architecture repo.
 - Optional casual passcode gate through `NEXT_PUBLIC_DEMO_ACCESS_HASH`.
 
 ## What This Repo Does Not Contain
@@ -118,8 +150,8 @@ http://127.0.0.1:4173/chat/
 
 Check that:
 
-- `/chat/` shows the demo context notice and answers public-safe prompts with
-  citations.
+- `/chat/` shows the highlighted demo context notice and answers public-safe
+  prompts with citations.
 - The Agentic RAG toggle updates the header state and returns static agentic
   retrieval metadata when enabled.
 - `/search/` returns fixture corpus hits.
@@ -133,4 +165,3 @@ Check that:
 | --- | --- |
 | `second-brain-portfolio-demo` | Static Netlify demo for portfolio viewers |
 | [`second-brain`](https://github.com/tomnguyen103/second-brain) | Full local-first app, backend, MCP server, evals, data model, runtime setup, and operations docs |
-
